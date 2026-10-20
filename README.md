@@ -1,6 +1,6 @@
-# 🎵 Music App
+# 🎵 Sangeet (संगीत)
 
-I'm building a full-stack music streaming app as a hands-on project to improve my development skills and understand how a music streaming application works behind the scenes.
+**Sangeet** (संगीत, "music" in Hindi) is a full-stack music streaming app. I'm building it as a hands-on project to improve my development skills and understand how a music streaming application works behind the scenes.
 
 The main goal of this project is to learn how to build REST APIs, manage users and roles, handle authentication, upload music, and organize songs into albums.
 
@@ -60,8 +60,8 @@ The main goal of this project is to learn how to build REST APIs, manage users a
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Lavish126/music-app.git
-cd music-app
+git clone https://github.com/Lavish126/sangeet.git
+cd sangeet
 ```
 
 ### 2. Install dependencies

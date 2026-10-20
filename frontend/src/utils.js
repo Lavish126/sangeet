@@ -1,4 +1,4 @@
-export const APP_NAME = "Music App";
+export const APP_NAME = "Sangeet";
 
 // The backend populates `artist` with different fields depending on the route
 export function artistName(artist) {

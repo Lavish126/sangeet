@@ -1,5 +1,5 @@
 {
-  "name": "music-app",
+  "name": "sangeet",
   "version": "1.0.0",
   "description": "Music app: Express + MongoDB API with a React frontend",
   "main": "server.js",

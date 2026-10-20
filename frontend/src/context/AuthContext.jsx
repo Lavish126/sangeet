@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 import { api } from "../api";
 
 const AuthContext = createContext(null);
-const STORAGE_KEY = "music-app:user";
+const STORAGE_KEY = "sangeet:user";
 
 // The backend has no "who am I" endpoint, so the user returned at login is kept locally
 function loadUser() {
