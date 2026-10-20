@@ -9,7 +9,7 @@ async function uploadFile(file, prefix = "music"){
     const result =  await ImageKitClient.files.upload({
        file,
        fileName: prefix + "_" + Date.now(),
-       folder: prefix === "cover" ? "backend01/spotify/covers" : "backend01/spotify"
+       folder: prefix === "cover" ? "music-app/covers" : "music-app/songs"
      })
      return result;
 }
