@@ -49,7 +49,8 @@ function SongPicker({ songs, selected, onChange }) {
   );
 }
 
-function UploadSong({ onDone }) {
+function UploadSong({ onDone, used, limit }) {
+  const full = limit != null && used >= limit;
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
   const [cover, setCover] = useState(null);
@@ -81,7 +82,11 @@ function UploadSong({ onDone }) {
 
   return (
     <form className="panel" onSubmit={handleSubmit}>
-      <h2>Upload a song</h2>
+      <div className="panel-head">
+        <h2>Upload a song</h2>
+        {limit != null && <small className={full ? "error" : "muted"}>{used} / {limit} songs</small>}
+      </div>
+      {full && <p className="error">You've reached the {limit}-song limit. Delete a song below to upload a new one.</p>}
       <label className="dropzone">
         <input type="file" accept="audio/*" onChange={handleFile} required />
         <strong>{file ? file.name : "Choose an audio file"}</strong>
@@ -94,7 +99,7 @@ function UploadSong({ onDone }) {
       <CoverInput file={cover} onChange={setCover} seed={title} />
       {status.type === "error" && <p className="error">{status.message}</p>}
       {status.type === "success" && <p className="success">{status.message}</p>}
-      <button className="btn" disabled={status.type === "loading" || !file}>
+      <button className="btn" disabled={status.type === "loading" || !file || full}>
         {status.type === "loading" ? "Uploading…" : "Upload"}
       </button>
     </form>
@@ -286,6 +291,7 @@ function AlbumRow({ album, songs, onChanged }) {
 export default function Studio() {
   const { user } = useAuth();
   const [songs, setSongs] = useState([]);
+  const [songLimit, setSongLimit] = useState(null);
   const [albums, setAlbums] = useState([]);
   const [error, setError] = useState("");
 
@@ -295,6 +301,7 @@ export default function Studio() {
       .then((data) => {
         setSongs(data.musics);
         setAlbums(data.albums);
+        setSongLimit(data.songLimit ?? null);
       })
       .catch((err) => setError(err.message));
   }, [user.id]);
@@ -313,7 +320,7 @@ export default function Studio() {
       {error && <p className="error">{error}</p>}
 
       <div className="studio-grid">
-        <UploadSong onDone={load} />
+        <UploadSong onDone={load} used={songs.length} limit={songLimit} />
         <CreateAlbum songs={songs} onDone={load} />
       </div>
 

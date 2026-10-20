@@ -333,3 +333,6 @@ a.btn-ghost:hover { text-decoration: none; }
   .artist-hero-avatar { width: 120px; height: 120px; font-size: 3rem; }
   .popover { right: -8px; }
 }
+
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.panel-head small { font-variant-numeric: tabular-nums; }

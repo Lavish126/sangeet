@@ -8,6 +8,8 @@ const userModel = require("../models/user.model");
 // Only these artist fields are ever sent to the client (never the password hash)
 const ARTIST_FIELDS = "userName email";
 const MAX_LIMIT = 50;
+// Each artist can upload up to this many songs (protects ImageKit storage)
+const MAX_SONGS_PER_ARTIST = parseInt(process.env.MAX_SONGS_PER_ARTIST) || 50;
 // Songs inside albums/playlists/likes come with their artist filled in
 const POPULATE_MUSICS = {path:"musics", populate:{path:"artist", select:ARTIST_FIELDS}};
 
@@ -61,6 +63,13 @@ async function createMusic(req,res){
    if(!title){
       return res.status(400).json({
          message:"title is required"
+      })
+   }
+   // checked before uploading so nothing is sent to ImageKit when over the limit
+   const songCount = await musicModel.countDocuments({artist: req.user.id});
+   if(songCount >= MAX_SONGS_PER_ARTIST){
+      return res.status(403).json({
+         message:`you can upload up to ${MAX_SONGS_PER_ARTIST} songs; delete a song to upload a new one`
       })
    }
 
@@ -371,7 +380,8 @@ async function getArtist(req,res){
 
    res.status(200).json({
       message:"Artist fetched successfully",
-      artist, musics, albums
+      artist, musics, albums,
+      songLimit: MAX_SONGS_PER_ARTIST,
    })
   }catch(error){
      serverError(res, "Error fetching artist", error);

@@ -76,6 +76,7 @@ Create a `.env` file in the project root and add your own credentials:
 
 ```env
 PORT=3000                # optional, defaults to 3000
+MAX_SONGS_PER_ARTIST=50  # optional, defaults to 50
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
