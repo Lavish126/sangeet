@@ -5,9 +5,11 @@ import { useAuth } from "../context/AuthContext";
 import { useLibrary } from "../context/LibraryContext";
 import { usePlayer } from "../context/PlayerContext";
 import TrackList from "../components/TrackList";
-import { PlayIcon, PlaylistIcon } from "../components/Icons";
+import { PlayIcon, PlaylistIcon, ShuffleIcon } from "../components/Icons";
+import { shuffled } from "../utils";
 
 const PAGE_SIZE = 20;
+const MAX_PAGE_SIZE = 50; // the API caps `limit` at 50
 
 function greeting() {
   const hour = new Date().getHours();
@@ -41,6 +43,25 @@ export default function Home() {
 
   useEffect(() => loadPage(1), []);
 
+  // Shuffle the whole library, not just the songs loaded on screen
+  const [shuffling, setShuffling] = useState(false);
+  const shuffleAll = async () => {
+    setShuffling(true);
+    try {
+      let all = [];
+      for (let page = 1, totalPages = 1; page <= totalPages; page++) {
+        const data = await api.getMusics({ page, limit: MAX_PAGE_SIZE });
+        all = all.concat(data.musics);
+        totalPages = data.pagination.totalPages;
+      }
+      playQueue(shuffled(all), 0);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setShuffling(false);
+    }
+  };
+
   const hasMore = pagination && pagination.page < pagination.totalPages;
 
   return (
@@ -54,9 +75,14 @@ export default function Home() {
           )}
         </div>
         {tracks.length > 0 && (
-          <button className="btn btn-icon" onClick={() => playQueue(tracks, 0)}>
-            <PlayIcon /> Play all
-          </button>
+          <div className="hero-actions">
+            <button className="btn btn-icon" onClick={() => playQueue(tracks, 0)}>
+              <PlayIcon /> Play all
+            </button>
+            <button className="btn btn-secondary" onClick={shuffleAll} disabled={shuffling}>
+              <ShuffleIcon /> {shuffling ? "Shuffling…" : "Shuffle"}
+            </button>
+          </div>
         )}
       </header>
 

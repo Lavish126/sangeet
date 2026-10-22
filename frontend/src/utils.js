@@ -13,6 +13,16 @@ export function formatTime(seconds) {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+// Fisher–Yates shuffle on a copy, so the original list keeps its order
+export function shuffled(list) {
+  const copy = [...list];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 // Deterministic gradient "cover art", since the backend stores no images
 export function coverStyle(seed = "") {
   let hash = 0;
