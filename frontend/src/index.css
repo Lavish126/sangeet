@@ -51,7 +51,8 @@ input { font: inherit; }
 .btn:hover:not(:disabled) { background: var(--accent-hover); }
 .btn:active:not(:disabled) { transform: scale(0.97); }
 .btn-secondary { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--border); }
-.btn-secondary:hover:not(:disabled) { background: var(--surface-2); }.btn-ghost {
+.btn-secondary:hover:not(:disabled) { background: var(--surface-2); }
+.btn-secondary.is-on { color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }.btn-ghost {
   background: transparent; color: var(--muted); border: 1px solid var(--border);
   border-radius: 999px; padding: 0.35rem 0.8rem; font-size: 0.8rem;
 }

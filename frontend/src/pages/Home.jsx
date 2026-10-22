@@ -43,18 +43,28 @@ export default function Home() {
 
   useEffect(() => loadPage(1), []);
 
-  // Shuffle the whole library, not just the songs loaded on screen
+  // Shuffle the whole library, not just the songs loaded on screen.
+  // The shuffled order replaces the list so you can see what plays next.
+  const [allTracks, setAllTracks] = useState(null);
+  const [shuffledTracks, setShuffledTracks] = useState(null);
   const [shuffling, setShuffling] = useState(false);
   const shuffleAll = async () => {
     setShuffling(true);
     try {
-      let all = [];
-      for (let page = 1, totalPages = 1; page <= totalPages; page++) {
-        const data = await api.getMusics({ page, limit: MAX_PAGE_SIZE });
-        all = all.concat(data.musics);
-        totalPages = data.pagination.totalPages;
+      let all = allTracks;
+      if (!all) {
+        all = [];
+        for (let page = 1, totalPages = 1; page <= totalPages; page++) {
+          const data = await api.getMusics({ page, limit: MAX_PAGE_SIZE });
+          all = all.concat(data.musics);
+          totalPages = data.pagination.totalPages;
+        }
+        setAllTracks(all);
       }
-      playQueue(shuffled(all), 0);
+      const order = shuffled(all);
+      setShuffledTracks(order);
+      playQueue(order, 0);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -62,26 +72,40 @@ export default function Home() {
     }
   };
 
-  const hasMore = pagination && pagination.page < pagination.totalPages;
+  const isShuffled = shuffledTracks !== null;
+  const visibleTracks = isShuffled ? shuffledTracks : tracks;
+  const hasMore = !isShuffled && pagination && pagination.page < pagination.totalPages;
 
   return (
     <section>
       <header className="page-header">
         <div>
           <p className="eyebrow">{greeting()}, {user?.userName}</p>
-          <h1>Latest songs</h1>
-          {pagination && pagination.total > 0 && (
-            <p className="muted subtitle">{pagination.total} {pagination.total === 1 ? "song" : "songs"}</p>
+          <h1>{isShuffled ? "Shuffled songs" : "Latest songs"}</h1>
+          {isShuffled ? (
+            <p className="muted subtitle">{shuffledTracks.length} songs in random order · playing from the top</p>
+          ) : (
+            pagination && pagination.total > 0 && (
+              <p className="muted subtitle">{pagination.total} {pagination.total === 1 ? "song" : "songs"}</p>
+            )
           )}
         </div>
         {tracks.length > 0 && (
           <div className="hero-actions">
-            <button className="btn btn-icon" onClick={() => playQueue(tracks, 0)}>
+            <button className="btn btn-icon" onClick={() => playQueue(visibleTracks, 0)}>
               <PlayIcon /> Play all
             </button>
-            <button className="btn btn-secondary" onClick={shuffleAll} disabled={shuffling}>
-              <ShuffleIcon /> {shuffling ? "Shuffling…" : "Shuffle"}
+            <button
+              className={isShuffled ? "btn btn-secondary is-on" : "btn btn-secondary"}
+              onClick={shuffleAll}
+              disabled={shuffling}
+              aria-pressed={isShuffled}
+            >
+              <ShuffleIcon /> {shuffling ? "Shuffling…" : isShuffled ? "Shuffle again" : "Shuffle"}
             </button>
+            {isShuffled && (
+              <button className="btn-ghost" onClick={() => setShuffledTracks(null)}>Latest order</button>
+            )}
           </div>
         )}
       </header>
@@ -104,7 +128,7 @@ export default function Home() {
           <p className="muted">When artists upload music it will show up here.</p>
         </div>
       )}
-      {tracks.length > 0 && <TrackList tracks={tracks} />}
+      {visibleTracks.length > 0 && <TrackList tracks={visibleTracks} />}
 
       {status === "loading" && <p className="muted">Loading songs…</p>}
       {hasMore && status === "ready" && (
